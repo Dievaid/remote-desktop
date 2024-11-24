@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.io.DataInputStream;
 import java.io.IOException;
 
@@ -21,8 +22,8 @@ public class MouseClickCommand implements Command {
             int y = din.readInt();
 
             robot.mouseMove(x, y);
-            robot.mousePress(button);
-            robot.mouseRelease(button);
+            robot.mousePress(InputEvent.getMaskForButton(button));
+            robot.mouseRelease(InputEvent.getMaskForButton(button));
         } catch (IOException e) {
             log.error("Error while trying to read mouse click command", e);
         }

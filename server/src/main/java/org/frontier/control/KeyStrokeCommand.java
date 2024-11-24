@@ -18,6 +18,7 @@ public class KeyStrokeCommand implements Command {
         try {
             int keyCode = dis.readInt();
             robot.keyPress(keyCode);
+            robot.keyRelease(keyCode);
         } catch (IOException e) {
             log.error("Error reading key stroke command", e);
         }
