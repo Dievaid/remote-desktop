@@ -1,5 +1,6 @@
 package org.frontier;
 
+import lombok.extern.log4j.Log4j2;
 import org.frontier.control.KeyStrokeHandler;
 import org.frontier.control.MouseClickHandler;
 import org.frontier.control.MouseMoveHandler;
@@ -16,6 +17,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Log4j2
 public class ClientApp {
     public static void main(String[] args) {
         try (Socket socket = new Socket(args[0], Integer.parseInt(args[1]))) {
@@ -55,7 +57,7 @@ public class ClientApp {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 }

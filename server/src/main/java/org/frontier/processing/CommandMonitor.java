@@ -26,7 +26,7 @@ public class CommandMonitor implements Runnable {
                 log.info("Command detected: {}", commandType);
                 try {
                     CommandFactory.get(commandType, dataInputStream, robot).execute();
-                } catch (IOException e) {
+                } catch (IOException | IllegalArgumentException e) {
                     log.error(e.getMessage(), e);
                 }
             }
