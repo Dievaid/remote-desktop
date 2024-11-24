@@ -27,9 +27,8 @@ public class MouseMoveHandler extends MouseMotionAdapter implements SocketHandle
 
     @Override
     public void handle(MouseEvent e) throws IOException {
-        dataOutputStream.writeLong(this.getType());
-        dataOutputStream.writeLong(e.getX());
-        dataOutputStream.writeLong(e.getY());
+        dataOutputStream.writeInt(e.getX());
+        dataOutputStream.writeInt(e.getY());
         dataOutputStream.flush();
     }
 

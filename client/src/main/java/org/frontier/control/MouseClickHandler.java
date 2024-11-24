@@ -26,7 +26,6 @@ public class MouseClickHandler extends MouseAdapter implements SocketHandler<Mou
 
     @Override
     public void handle(MouseEvent e) throws IOException {
-        dataOutputStream.writeInt(this.getType());
         dataOutputStream.writeInt(e.getButton());
         dataOutputStream.writeInt(e.getX());
         dataOutputStream.writeInt(e.getY());

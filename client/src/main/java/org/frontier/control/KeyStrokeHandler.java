@@ -29,7 +29,6 @@ public class KeyStrokeHandler extends KeyAdapter implements SocketHandler<KeyEve
 
     @Override
     public void handle(KeyEvent e) throws IOException {
-        dataOutputStream.writeInt(this.getType());
         dataOutputStream.writeInt(e.getKeyCode());
         dataOutputStream.flush();
     }
