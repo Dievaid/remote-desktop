@@ -46,9 +46,9 @@ public class ClientApp {
             InputStream inputStream = socket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(inputStream);
 
-            frame.addMouseListener(new MouseClickHandler(socketList.get(Constants.KEY_STROKE_EVENT)));
+            frame.addMouseListener(new MouseClickHandler(socketList.get(Constants.MOUSE_CLICK_EVENT)));
             frame.addMouseMotionListener(new MouseMoveHandler(socketList.get(Constants.MOUSE_MOVE_EVENT)));
-            frame.addKeyListener(new KeyStrokeHandler(socketList.get(Constants.MOUSE_CLICK_EVENT)));
+            frame.addKeyListener(new KeyStrokeHandler(socketList.get(Constants.KEY_STROKE_EVENT)));
 
             while (socket.isConnected()) {
                 int imageLength = dataInputStream.readInt();
