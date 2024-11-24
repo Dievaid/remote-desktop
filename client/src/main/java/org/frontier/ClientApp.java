@@ -10,17 +10,26 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Log4j2
 public class ClientApp {
     public static void main(String[] args) {
-        try (Socket socket = new Socket(args[0], Integer.parseInt(args[1]))) {
+        try {
+            Socket socket = new Socket(args[0], Integer.parseInt(args[1]));
+            List<Socket> socketList = IntStream.range(0, Constants.MOUSE_CLICK_EVENT + 1)
+                    .mapToObj(idx -> {
+                        try {
+                            return new Socket(args[0], Integer.parseInt(args[1]));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .toList();
+
             JFrame frame = new JFrame(Constants.APP_NAME);
             JLabel imageLabel = new JLabel();
 
@@ -35,13 +44,11 @@ public class ClientApp {
             );
 
             InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
             DataInputStream dataInputStream = new DataInputStream(inputStream);
 
-            ReentrantLock lock = new ReentrantLock();
-            frame.addMouseListener(new MouseClickHandler(outputStream, lock));
-            frame.addMouseMotionListener(new MouseMoveHandler(outputStream, lock));
-            frame.addKeyListener(new KeyStrokeHandler(outputStream, lock));
+            frame.addMouseListener(new MouseClickHandler(socketList.get(Constants.KEY_STROKE_EVENT)));
+            frame.addMouseMotionListener(new MouseMoveHandler(socketList.get(Constants.MOUSE_MOVE_EVENT)));
+            frame.addKeyListener(new KeyStrokeHandler(socketList.get(Constants.MOUSE_CLICK_EVENT)));
 
             while (socket.isConnected()) {
                 int imageLength = dataInputStream.readInt();

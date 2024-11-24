@@ -7,15 +7,23 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
 public class ServerApp {
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));
-        Socket socket = serverSocket.accept();
+
+        Socket screenSocket = serverSocket.accept();
+        Socket keystrokeSocket = serverSocket.accept();
+        Socket mouseMoveSocket = serverSocket.accept();
+        Socket mouseClickSocket = serverSocket.accept();
+
         Robot robot = new Robot();
 
-        ScreenRecorder screenRecorder = new ScreenRecorder(socket, robot);
-        CommandMonitor commandMonitor = new CommandMonitor(socket, robot);
+        List<Socket> socketList = List.of(keystrokeSocket, mouseMoveSocket, mouseClickSocket);
+
+        ScreenRecorder screenRecorder = new ScreenRecorder(screenSocket, robot);
+        CommandMonitor commandMonitor = new CommandMonitor(socketList, robot);
 
         Thread recordingThread = new Thread(screenRecorder);
         Thread commandThread = new Thread(commandMonitor);
@@ -26,6 +34,10 @@ public class ServerApp {
         recordingThread.join();
         commandThread.join();
 
+        screenSocket.close();
+        keystrokeSocket.close();
+        mouseMoveSocket.close();
+        mouseClickSocket.close();
         serverSocket.close();
     }
 }
