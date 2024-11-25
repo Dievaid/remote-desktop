@@ -26,8 +26,11 @@ public class KeyStrokeCommand implements Command {
 
             if (combinationKeyCodes.contains(keyCode)) {
                 int combinationKeyCode = dis.readInt();
-                robot.keyPress(combinationKeyCode);
-                robot.keyRelease(combinationKeyCode);
+                while (combinationKeyCode != KeyEvent.KEY_RELEASED) {
+                    robot.keyPress(combinationKeyCode);
+                    robot.keyRelease(combinationKeyCode);
+                    combinationKeyCode = dis.readInt();
+                }
             }
 
             robot.keyRelease(keyCode);
