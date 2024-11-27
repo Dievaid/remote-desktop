@@ -1,9 +1,6 @@
 package org.frontier.processing;
 
-import org.frontier.control.Command;
-import org.frontier.control.KeyStrokeCommand;
-import org.frontier.control.MouseClickCommand;
-import org.frontier.control.MouseMoveCommand;
+import org.frontier.control.*;
 import org.frontier.utils.Constants;
 
 import java.awt.*;
@@ -17,6 +14,7 @@ public final class CommandFactory {
             case Constants.KEY_STROKE_EVENT -> new KeyStrokeCommand(dataInputStream, robot);
             case Constants.MOUSE_MOVE_EVENT -> new MouseMoveCommand(dataInputStream, robot);
             case Constants.MOUSE_CLICK_EVENT -> new MouseClickCommand(dataInputStream, robot);
+            case Constants.MOUSE_SCROLL_EVENT -> new MouseScrollCommand(dataInputStream, robot);
             default -> throw new IllegalArgumentException("Unknown command: " + command);
         };
     }

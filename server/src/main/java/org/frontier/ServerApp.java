@@ -17,10 +17,16 @@ public class ServerApp {
         Socket keystrokeSocket = serverSocket.accept();
         Socket mouseMoveSocket = serverSocket.accept();
         Socket mouseClickSocket = serverSocket.accept();
+        Socket mouseScrollSocket = serverSocket.accept();
 
         Robot robot = new Robot();
 
-        List<Socket> socketList = List.of(keystrokeSocket, mouseMoveSocket, mouseClickSocket);
+        List<Socket> socketList = List.of(
+                keystrokeSocket,
+                mouseMoveSocket,
+                mouseClickSocket,
+                mouseScrollSocket
+        );
 
         ScreenRecorder screenRecorder = new ScreenRecorder(screenSocket, robot);
         CommandMonitor commandMonitor = new CommandMonitor(socketList, robot);
@@ -34,10 +40,9 @@ public class ServerApp {
         recordingThread.join();
         commandThread.join();
 
-        screenSocket.close();
-        keystrokeSocket.close();
-        mouseMoveSocket.close();
-        mouseClickSocket.close();
+        for (Socket socket : socketList) {
+            socket.close();
+        }
         serverSocket.close();
     }
 }

@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.frontier.control.KeyStrokeHandler;
 import org.frontier.control.MouseClickHandler;
 import org.frontier.control.MouseMoveHandler;
+import org.frontier.control.MouseScrollHandler;
 import org.frontier.utils.Constants;
 
 import javax.imageio.ImageIO;
@@ -20,7 +21,7 @@ public class ClientApp {
     public static void main(String[] args) {
         try {
             Socket socket = new Socket(args[0], Integer.parseInt(args[1]));
-            List<Socket> socketList = IntStream.range(0, Constants.MOUSE_CLICK_EVENT + 1)
+            List<Socket> socketList = IntStream.range(0, Constants.MOUSE_SCROLL_EVENT + 1)
                     .mapToObj(idx -> {
                         try {
                             return new Socket(args[0], Integer.parseInt(args[1]));
@@ -46,9 +47,10 @@ public class ClientApp {
             InputStream inputStream = socket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(inputStream);
 
-            frame.addMouseListener(new MouseClickHandler(socketList.get(Constants.MOUSE_CLICK_EVENT)));
-            frame.addMouseMotionListener(new MouseMoveHandler(socketList.get(Constants.MOUSE_MOVE_EVENT)));
             frame.addKeyListener(new KeyStrokeHandler(socketList.get(Constants.KEY_STROKE_EVENT)));
+            frame.addMouseMotionListener(new MouseMoveHandler(socketList.get(Constants.MOUSE_MOVE_EVENT)));
+            frame.addMouseListener(new MouseClickHandler(socketList.get(Constants.MOUSE_CLICK_EVENT)));
+            frame.addMouseWheelListener(new MouseScrollHandler(socketList.get(Constants.MOUSE_SCROLL_EVENT)));
 
             while (socket.isConnected()) {
                 int imageLength = dataInputStream.readInt();
