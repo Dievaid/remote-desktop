@@ -3,6 +3,7 @@ package org.frontier.processing;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.frontier.control.Command;
 import org.frontier.utils.Constants;
 
 import java.awt.*;
@@ -37,11 +38,12 @@ public class CommandMonitor implements Runnable {
         try {
             InputStream inputStream = socket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(inputStream);
+            Command socketCommand = CommandFactory.get(commandType, dataInputStream, robot);
 
             while (socket.isConnected()) {
                 try {
-                    CommandFactory.get(commandType, dataInputStream, robot).execute();
-                } catch (IOException | IllegalArgumentException e) {
+                    socketCommand.execute();
+                } catch (IllegalArgumentException e) {
                     log.error(e.getMessage(), e);
                 }
             }
