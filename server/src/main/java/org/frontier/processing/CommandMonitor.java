@@ -42,8 +42,11 @@ public class CommandMonitor implements Runnable {
             while (socket.isConnected()) {
                 try {
                     socketCommand.execute();
-                } catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e ) {
                     log.error(e.getMessage(), e);
+                } catch (IOException e) {
+                    log.info("Connection to {} was closed", socket.getRemoteSocketAddress());
+                    break;
                 }
             }
 
