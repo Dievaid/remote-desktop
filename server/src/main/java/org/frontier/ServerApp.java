@@ -2,31 +2,33 @@ package org.frontier;
 
 import org.frontier.processing.CommandMonitor;
 import org.frontier.processing.ScreenRecorder;
+import org.frontier.utils.Constants;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ServerApp {
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
+        while (true) {
+            setupConnectionToClient(args);
+        }
+    }
+
+    private static void setupConnectionToClient(String[] args) throws IOException, AWTException, InterruptedException {
         ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));
 
         Socket screenSocket = serverSocket.accept();
-        Socket keystrokeSocket = serverSocket.accept();
-        Socket mouseMoveSocket = serverSocket.accept();
-        Socket mouseClickSocket = serverSocket.accept();
-        Socket mouseScrollSocket = serverSocket.accept();
+
+        List<Socket> socketList = new ArrayList<>(Constants.MOUSE_SCROLL_EVENT + 1);
+        for (int i = 0; i < Constants.MOUSE_SCROLL_EVENT + 1; i++) {
+            socketList.add(serverSocket.accept());
+        }
 
         Robot robot = new Robot();
-
-        List<Socket> socketList = List.of(
-                keystrokeSocket,
-                mouseMoveSocket,
-                mouseClickSocket,
-                mouseScrollSocket
-        );
 
         ScreenRecorder screenRecorder = new ScreenRecorder(screenSocket, robot);
         CommandMonitor commandMonitor = new CommandMonitor(socketList, robot);

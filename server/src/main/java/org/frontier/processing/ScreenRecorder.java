@@ -50,7 +50,7 @@ public final class ScreenRecorder implements Runnable {
         try {
             this.startRecording();
         } catch (IOException e) {
-            log.error("Failed to start recording", e);
+            log.error("Failed to send screen data", e);
         }
     }
 }
