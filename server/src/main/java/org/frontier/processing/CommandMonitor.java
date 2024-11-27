@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.frontier.control.Command;
-import org.frontier.utils.Constants;
 
 import java.awt.*;
 import java.io.DataInputStream;
