@@ -60,12 +60,11 @@ public class ClientApp {
             frame.addMouseWheelListener(new MouseScrollHandler(socketList.get(Constants.MOUSE_SCROLL_EVENT)));
 
             while (socket.isConnected()) {
-                DataInputStream decryptedBytes = new DataInputStream(
-                        new ByteArrayInputStream(dataInputStream.readAllBytes()));
+                int imageLength = dataInputStream.readInt();
+                byte[] encryptedImageBytes = new byte[imageLength];
 
-                int imageLength = decryptedBytes.readInt();
-                byte[] imageBytes = new byte[imageLength];
-                decryptedBytes.readFully(imageBytes);
+                dataInputStream.readFully(encryptedImageBytes);
+                byte[] imageBytes = encryptor.encrypt(encryptedImageBytes);
 
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(imageBytes);
                 BufferedImage receivedImage = ImageIO.read(byteArrayInputStream);

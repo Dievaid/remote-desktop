@@ -41,11 +41,8 @@ public final class ScreenRecorder implements Runnable {
 
             byte[] bytes = byteArrayOutputStream.toByteArray();
 
-            ByteArrayOutputStream packetStream = new ByteArrayOutputStream();
-            packetStream.write(bytes.length);
-            packetStream.write(bytes);
-
-            dataOutputStream.write(encryptor.encrypt(packetStream.toByteArray()));
+            dataOutputStream.writeInt(bytes.length);
+            dataOutputStream.write(encryptor.encrypt(bytes));
             dataOutputStream.flush();
         }
     }
