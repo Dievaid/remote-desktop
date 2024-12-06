@@ -5,14 +5,18 @@ import org.frontier.control.KeyStrokeHandler;
 import org.frontier.control.MouseClickHandler;
 import org.frontier.control.MouseMoveHandler;
 import org.frontier.control.MouseScrollHandler;
+import org.frontier.crypto.AESEncryptor;
 import org.frontier.utils.Constants;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -21,6 +25,9 @@ public class ClientApp {
     public static void main(String[] args) {
         try {
             Socket socket = new Socket(args[0], Integer.parseInt(args[1]));
+            SecretKey secretKey = new SecretKeySpec(Base64.getDecoder().decode(args[2]), "AES");
+            AESEncryptor encryptor = new AESEncryptor(secretKey);
+
             List<Socket> socketList = IntStream.range(0, Constants.MOUSE_SCROLL_EVENT + 1)
                     .mapToObj(idx -> {
                         try {
@@ -53,10 +60,12 @@ public class ClientApp {
             frame.addMouseWheelListener(new MouseScrollHandler(socketList.get(Constants.MOUSE_SCROLL_EVENT)));
 
             while (socket.isConnected()) {
-                int imageLength = dataInputStream.readInt();
+                DataInputStream decryptedBytes = new DataInputStream(
+                        new ByteArrayInputStream(dataInputStream.readAllBytes()));
 
+                int imageLength = decryptedBytes.readInt();
                 byte[] imageBytes = new byte[imageLength];
-                dataInputStream.readFully(imageBytes);
+                decryptedBytes.readFully(imageBytes);
 
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(imageBytes);
                 BufferedImage receivedImage = ImageIO.read(byteArrayInputStream);

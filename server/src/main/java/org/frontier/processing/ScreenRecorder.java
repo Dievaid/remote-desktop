@@ -1,17 +1,16 @@
 package org.frontier.processing;
 
 import lombok.extern.log4j.Log4j2;
+import org.frontier.crypto.AESEncryptor;
 import org.frontier.utils.Constants;
 
+import javax.crypto.SecretKey;
 import javax.imageio.ImageIO;
 import java.awt.Robot;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 
 @Log4j2
@@ -22,10 +21,12 @@ public final class ScreenRecorder implements Runnable {
             Toolkit.getDefaultToolkit().getScreenSize());
 
     private final Socket socket;
+    private final AESEncryptor encryptor;
 
-    public ScreenRecorder(Socket socket, Robot robot) {
+    public ScreenRecorder(Socket socket, Robot robot, SecretKey secretKey) {
         this.socket = socket;
         this.robot = robot;
+        this.encryptor = new AESEncryptor(secretKey);
     }
 
     public void startRecording() throws IOException {
@@ -39,8 +40,12 @@ public final class ScreenRecorder implements Runnable {
             ImageIO.write(image, Constants.PNG_FILE_EXTENSION, byteArrayOutputStream);
 
             byte[] bytes = byteArrayOutputStream.toByteArray();
-            dataOutputStream.writeInt(bytes.length);
-            dataOutputStream.write(bytes);
+
+            ByteArrayOutputStream packetStream = new ByteArrayOutputStream();
+            packetStream.write(bytes.length);
+            packetStream.write(bytes);
+
+            dataOutputStream.write(encryptor.encrypt(packetStream.toByteArray()));
             dataOutputStream.flush();
         }
     }
