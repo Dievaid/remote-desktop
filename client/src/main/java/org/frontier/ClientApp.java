@@ -61,10 +61,8 @@ public class ClientApp {
 
             while (socket.isConnected()) {
                 int imageLength = dataInputStream.readInt();
-                byte[] encryptedImageBytes = new byte[imageLength];
-
-                dataInputStream.readFully(encryptedImageBytes);
-                byte[] imageBytes = encryptor.encrypt(encryptedImageBytes);
+                byte[] encryptedImageBytes = dataInputStream.readNBytes(imageLength);
+                byte[] imageBytes = encryptor.decrypt(encryptedImageBytes);
 
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(imageBytes);
                 BufferedImage receivedImage = ImageIO.read(byteArrayInputStream);
