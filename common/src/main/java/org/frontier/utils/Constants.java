@@ -1,7 +1,9 @@
 package org.frontier.utils;
 
-public class Constants {
+public final class Constants {
     public static final String APP_NAME = "Client Remote Frontier";
+
+    public static final String PNG_FILE_EXTENSION = "png";
 
     public static final int KEY_STROKE_EVENT = 0;
     public static final int MOUSE_MOVE_EVENT = 1;
