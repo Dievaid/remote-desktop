@@ -40,11 +40,12 @@ public final class ScreenRecorder implements Runnable {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(image, Constants.PNG_FILE_EXTENSION, byteArrayOutputStream);
 
-            byte[] bytes = Zstd.compress(byteArrayOutputStream.toByteArray());
+            byte[] imageBytes = byteArrayOutputStream.toByteArray();
+            byte[] bytes = Zstd.compress(imageBytes);
             byte[] encryptedBytes = encryptor.encrypt(bytes);
 
             dataOutputStream.writeInt(encryptedBytes.length);
-            dataOutputStream.writeInt(bytes.length);
+            dataOutputStream.writeInt(imageBytes.length);
             dataOutputStream.write(encryptedBytes);
             dataOutputStream.flush();
         }
