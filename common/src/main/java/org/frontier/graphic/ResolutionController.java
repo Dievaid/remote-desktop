@@ -1,8 +1,11 @@
 package org.frontier.graphic;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.awt.*;
 import java.util.Optional;
 
+@Log4j2
 public final class ResolutionController {
     private static final GraphicsDevice graphicsDevice = GraphicsEnvironment
             .getLocalGraphicsEnvironment()
@@ -18,8 +21,13 @@ public final class ResolutionController {
             modeToSet = Optional.of(displayMode);
         }
 
-        graphicsDevice.setDisplayMode(
-                modeToSet.orElse(graphicsDevice.getDisplayMode())
-        );
+        try {
+            graphicsDevice.setDisplayMode(
+                    modeToSet.orElse(graphicsDevice.getDisplayMode())
+            );
+        } catch (Exception e) {
+            DisplayMode mode = modeToSet.orElse(graphicsDevice.getDisplayMode());
+            log.error("Failed to set display mode to {} - {}", mode.getWidth(), mode.getHeight(), e);
+        }
     }
 }
