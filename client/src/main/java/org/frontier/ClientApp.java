@@ -60,6 +60,15 @@ public class ClientApp {
             frame.addMouseListener(new MouseClickHandler(socketList.get(Constants.MOUSE_CLICK_EVENT)));
             frame.addMouseWheelListener(new MouseScrollHandler(socketList.get(Constants.MOUSE_SCROLL_EVENT)));
 
+            OutputStream outputStream = socket.getOutputStream();
+            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+            dataOutputStream.writeInt(
+                    GraphicsEnvironment
+                            .getLocalGraphicsEnvironment()
+                            .getMaximumWindowBounds()
+                            .height
+            );
+
             while (socket.isConnected()) {
                 int imageLength = dataInputStream.readInt();
                 int compressedLength = dataInputStream.readInt();
