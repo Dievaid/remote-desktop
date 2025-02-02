@@ -1,5 +1,6 @@
 package org.frontier;
 
+import com.github.luben.zstd.Zstd;
 import lombok.extern.log4j.Log4j2;
 import org.frontier.control.KeyStrokeHandler;
 import org.frontier.control.MouseClickHandler;
@@ -61,8 +62,10 @@ public class ClientApp {
 
             while (socket.isConnected()) {
                 int imageLength = dataInputStream.readInt();
+                int compressedLength = dataInputStream.readInt();
                 byte[] encryptedImageBytes = dataInputStream.readNBytes(imageLength);
-                byte[] imageBytes = encryptor.decrypt(encryptedImageBytes);
+                byte[] compressedBytes = encryptor.decrypt(encryptedImageBytes);
+                byte[] imageBytes = Zstd.decompress(compressedBytes, compressedLength);
 
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(imageBytes);
                 BufferedImage receivedImage = ImageIO.read(byteArrayInputStream);
