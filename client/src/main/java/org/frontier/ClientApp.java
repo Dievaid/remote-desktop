@@ -40,11 +40,11 @@ public class ClientApp {
                     .toList();
 
             JFrame frame = new JFrame(Constants.APP_NAME);
-            JLabel imageLabel = new JLabel();
+            BufferedCanvas canvas = new BufferedCanvas(frame);
 
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-            frame.add(imageLabel);
+            frame.add(canvas);
             frame.setVisible(true);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(
@@ -55,10 +55,10 @@ public class ClientApp {
             InputStream inputStream = socket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(inputStream);
 
-            frame.addKeyListener(new KeyStrokeHandler(socketList.get(Constants.KEY_STROKE_EVENT)));
-            frame.addMouseMotionListener(new MouseMoveHandler(socketList.get(Constants.MOUSE_MOVE_EVENT)));
-            frame.addMouseListener(new MouseClickHandler(socketList.get(Constants.MOUSE_CLICK_EVENT)));
-            frame.addMouseWheelListener(new MouseScrollHandler(socketList.get(Constants.MOUSE_SCROLL_EVENT)));
+            canvas.addKeyListener(new KeyStrokeHandler(socketList.get(Constants.KEY_STROKE_EVENT)));
+            canvas.addMouseMotionListener(new MouseMoveHandler(socketList.get(Constants.MOUSE_MOVE_EVENT)));
+            canvas.addMouseListener(new MouseClickHandler(socketList.get(Constants.MOUSE_CLICK_EVENT)));
+            canvas.addMouseWheelListener(new MouseScrollHandler(socketList.get(Constants.MOUSE_SCROLL_EVENT)));
 
             OutputStream outputStream = socket.getOutputStream();
             DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
@@ -79,8 +79,8 @@ public class ClientApp {
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(imageBytes);
                 BufferedImage receivedImage = ImageIO.read(byteArrayInputStream);
 
-                imageLabel.setIcon(new ImageIcon(receivedImage));
-                frame.repaint();
+                canvas.setImage(receivedImage);
+                canvas.repaint();
             }
 
         } catch (Exception e) {

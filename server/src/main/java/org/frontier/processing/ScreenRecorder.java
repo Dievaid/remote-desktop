@@ -3,7 +3,6 @@ package org.frontier.processing;
 import com.github.luben.zstd.Zstd;
 import lombok.extern.log4j.Log4j2;
 import org.frontier.crypto.AESEncryptor;
-import org.frontier.graphic.ResolutionController;
 import org.frontier.utils.Constants;
 
 import javax.crypto.SecretKey;
@@ -32,12 +31,8 @@ public final class ScreenRecorder implements Runnable {
     }
 
     public void startRecording() throws IOException {
-        InputStream inputStream = socket.getInputStream();
         OutputStream outputStream = socket.getOutputStream();
-        DataInputStream dataInputStream = new DataInputStream(inputStream);
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-
-        ResolutionController.resizeToClosestHeight(dataInputStream.readInt());
 
         while (socket.isConnected()) {
             BufferedImage image = robot.createScreenCapture(frame);
