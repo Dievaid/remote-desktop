@@ -1,20 +1,23 @@
 package org.frontier.control;
 
-import lombok.RequiredArgsConstructor;
+import org.frontier.service.RobotService;
 
-import java.awt.*;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-@RequiredArgsConstructor
 public class MouseMoveCommand implements Command {
     private final DataInputStream din;
-    private final Robot robot;
+    private final RobotService robotService;
+
+    public MouseMoveCommand(DataInputStream din, RobotService robotService) {
+        this.din = din;
+        this.robotService = robotService;
+    }
 
     @Override
     public void execute() throws IOException {
         int x = din.readInt();
         int y = din.readInt();
-        robot.mouseMove(x, y);
+        robotService.mouseMove(x, y);
     }
 }

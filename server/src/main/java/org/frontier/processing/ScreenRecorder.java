@@ -1,41 +1,49 @@
 package org.frontier.processing;
 
 import com.github.luben.zstd.Zstd;
-import lombok.extern.log4j.Log4j2;
-import org.frontier.crypto.AESEncryptor;
+import org.frontier.crypto.Encryptor;
 import org.frontier.utils.Constants;
 
-import javax.crypto.SecretKey;
 import javax.imageio.ImageIO;
-import java.awt.Robot;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 
-@Log4j2
+import org.frontier.service.RobotService;
+
+import java.util.function.BooleanSupplier;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 public final class ScreenRecorder implements Runnable {
-    private final Robot robot;
+    private static final Logger log = LogManager.getLogger(ScreenRecorder.class);
+    private final RobotService robotService;
+    private final Rectangle frame;
+    private final Encryptor encryptor;
+    private final BooleanSupplier loopCondition;
+    private final OutputStream outputStream;
 
-    private final Rectangle frame = new Rectangle(
-            Toolkit.getDefaultToolkit().getScreenSize());
+    public ScreenRecorder(Socket socket, RobotService robotService, Rectangle frame, Encryptor encryptor)
+            throws IOException {
+        this(robotService, frame, encryptor, socket::isConnected, socket.getOutputStream());
+    }
 
-    private final Socket socket;
-    private final AESEncryptor encryptor;
-
-    public ScreenRecorder(Socket socket, Robot robot, SecretKey secretKey) {
-        this.socket = socket;
-        this.robot = robot;
-        this.encryptor = new AESEncryptor(secretKey);
+    public ScreenRecorder(RobotService robotService, Rectangle frame, Encryptor encryptor,
+            BooleanSupplier loopCondition, OutputStream outputStream) {
+        this.robotService = robotService;
+        this.frame = frame;
+        this.encryptor = encryptor;
+        this.loopCondition = loopCondition;
+        this.outputStream = outputStream;
     }
 
     public void startRecording() throws IOException {
-        OutputStream outputStream = socket.getOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
-        while (socket.isConnected()) {
-            BufferedImage image = robot.createScreenCapture(frame);
+        while (loopCondition.getAsBoolean()) {
+            BufferedImage image = robotService.createScreenCapture(frame);
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(image, Constants.PNG_FILE_EXTENSION, byteArrayOutputStream);

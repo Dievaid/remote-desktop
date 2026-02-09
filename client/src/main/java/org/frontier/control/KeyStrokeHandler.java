@@ -1,24 +1,25 @@
 package org.frontier.control;
 
-import lombok.extern.log4j.Log4j2;
 import org.frontier.utils.Constants;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.List;
 
-@Log4j2
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 public class KeyStrokeHandler extends KeyAdapter implements SocketHandler<KeyEvent> {
+    private static final Logger log = LogManager.getLogger(KeyStrokeHandler.class);
     private final DataOutputStream dataOutputStream;
 
     private static final List<Integer> combinationKeyList = List.of(
             KeyEvent.VK_SHIFT, KeyEvent.VK_CONTROL, KeyEvent.VK_ALT);
 
-    public KeyStrokeHandler(Socket socket) throws IOException {
-        this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
+    public KeyStrokeHandler(java.io.OutputStream outputStream) {
+        this.dataOutputStream = new DataOutputStream(outputStream);
     }
 
     @Override
