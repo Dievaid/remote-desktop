@@ -6,13 +6,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 public class MouseMoveHandler extends MouseMotionAdapter implements SocketHandler<MouseEvent> {
     private final DataOutputStream dataOutputStream;
 
-    public MouseMoveHandler(Socket socket) throws IOException {
-        this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
+    public MouseMoveHandler(java.io.OutputStream outputStream) {
+        this.dataOutputStream = new DataOutputStream(outputStream);
     }
 
     @Override
@@ -23,7 +22,6 @@ public class MouseMoveHandler extends MouseMotionAdapter implements SocketHandle
             throw new RuntimeException(ex);
         }
     }
-
 
     @Override
     public void handle(MouseEvent e) throws IOException {

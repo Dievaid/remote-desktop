@@ -6,13 +6,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 public class MouseClickHandler extends MouseAdapter implements SocketHandler<MouseEvent> {
     private final DataOutputStream dataOutputStream;
 
-    public MouseClickHandler(Socket socket) throws IOException {
-        this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
+    public MouseClickHandler(java.io.OutputStream outputStream) {
+        this.dataOutputStream = new DataOutputStream(outputStream);
     }
 
     @Override

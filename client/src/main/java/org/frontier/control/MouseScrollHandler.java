@@ -6,13 +6,12 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 public class MouseScrollHandler implements SocketHandler<MouseWheelEvent>, MouseWheelListener {
     private final DataOutputStream dataOutputStream;
 
-    public MouseScrollHandler(Socket socket) throws IOException {
-        this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
+    public MouseScrollHandler(java.io.OutputStream outputStream) {
+        this.dataOutputStream = new DataOutputStream(outputStream);
     }
 
     @Override

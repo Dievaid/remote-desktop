@@ -1,11 +1,9 @@
 package org.frontier.processing;
 
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import org.frontier.control.Command;
 
-import java.awt.*;
+import org.frontier.service.RobotService;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,13 +11,30 @@ import java.net.Socket;
 import java.util.List;
 import java.util.stream.IntStream;
 
-@Log4j2
-@RequiredArgsConstructor
-public class CommandMonitor implements Runnable {
-    private final List<Socket> socketList;
-    private final Robot robot;
+import java.util.function.Function;
 
-    @SneakyThrows
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
+public class CommandMonitor implements Runnable {
+    private static final Logger log = LogManager.getLogger(CommandMonitor.class);
+    private final List<Socket> socketList;
+    private final RobotService robotService;
+    private final CommandFactory commandFactory;
+    private final Function<Socket, Boolean> loopCondition;
+
+    public CommandMonitor(List<Socket> socketList, RobotService robotService, CommandFactory commandFactory) {
+        this(socketList, robotService, commandFactory, Socket::isConnected);
+    }
+
+    public CommandMonitor(List<Socket> socketList, RobotService robotService, CommandFactory commandFactory,
+            Function<Socket, Boolean> loopCondition) {
+        this.socketList = socketList;
+        this.robotService = robotService;
+        this.commandFactory = commandFactory;
+        this.loopCondition = loopCondition;
+    }
+
     @Override
     public void run() {
         List<Thread> threads = IntStream.range(0, socketList.size())
@@ -28,7 +43,12 @@ public class CommandMonitor implements Runnable {
 
         threads.forEach(Thread::start);
         for (Thread thread : threads) {
-            thread.join();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                log.error("Thread interrupted", e);
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -37,12 +57,12 @@ public class CommandMonitor implements Runnable {
         try {
             InputStream inputStream = socket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(inputStream);
-            Command socketCommand = CommandFactory.get(commandType, dataInputStream, robot);
+            Command socketCommand = commandFactory.get(commandType, dataInputStream, robotService);
 
-            while (socket.isConnected()) {
+            while (loopCondition.apply(socket)) {
                 try {
                     socketCommand.execute();
-                } catch (IllegalArgumentException e ) {
+                } catch (IllegalArgumentException e) {
                     log.error(e.getMessage(), e);
                 } catch (IOException e) {
                     log.info("Connection to {} was closed", socket.getRemoteSocketAddress());
